@@ -1,14 +1,18 @@
+// import { useEffect } from "react";
 import UList from "./common/UList";
+function UserList({ className, userList, searchUser, deleteUser, success, error }) {
 
-const UsersList = ({ className, userList }) => {
   return (
     <div className={className}>
-      {userList
-        ? userList.map((user) => (
-            <UList className="user" user={user} key={user.id} />
-          ))
-        : null}
+      {searchUser && searchUser.length > 0
+        ? searchUser.map((user, index) => (
+          <UList className="user" user={user} key={index} id={index} />
+        ))
+        : userList ? userList.map((user, index) => (
+          <UList className="user" user={user} key={index} id={index} deleteUser={deleteUser} success={success} error={error} />
+        )) : null}
     </div>
   );
-};
-export default UsersList;
+}
+
+export default UserList;

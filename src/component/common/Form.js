@@ -1,68 +1,62 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import RemixInput from "./RemixInput";
 
-function Form({ searchUser }) {
-  const [formInput, setFormInput] = useState({});
-
-  const [message, setMessage] = useState({
-    success: "",
-    error: {
-      firstName: "",
-      lastName: "",
-      username: "",
-      age: "",
-      email: "",
-      phone: "",
-      birthDate: "",
-      form: "",
-    },
+function Form({ searchUser, error, addUser, formError, success, setPend }) {
+  const [formInput, setFormInput] = useState({
+    firstName: '', maidenName: '', lastName: '',
+    username: '',
+    email: '', age: '',
+    gender: '', phone: '',
   });
+
+  const [pendingUI, setPendingUI] = useState({ add: false, search: false })
+
   const handleChange = (e) => {
     setFormInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-    if (message.error[e.target.name])
-      setMessage((prev) => ({
-        ...prev,
-        error: { ...prev.error, [e.target.name]: "" },
-      }));
-    if (message.success) setMessage((prev) => ({ ...prev, success: "" }));
-    if (message.error.form)
-      setMessage((prev) => ({ ...prev, error: { ...prev.error, form: "" } }));
   };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+
     switch (e.target.name) {
       case "search":
-        let key, value;
-        const values = Object.values(formInput);
-        const keys = Object.keys(formInput);
-        for (let i = 0; i < values.length; i++) {
-          if (values[i]) {
-            key = keys[i];
-            value = values[i];
-            break;
-          }
-        }
-        if (key && value) {
-          searchUser({ key, value });
-        }
+        setPendingUI(prev => ({ ...prev, search: true }))
+        setPend(true);
+        searchUser(formInput);
         break;
       case "add":
+        setPendingUI(prev => ({ ...prev, add: true }))
+        addUser(formInput)
         break;
       default:
         break;
-    }
-  };
 
+    }
+    setFormInput({
+      firstName: '', maidenName: '', lastName: '',
+      username: '',
+      email: '', age: '',
+      gender: '', phone: '',
+    })
+  };
+  useEffect(() => {
+    if (error || formError || success)
+      setPendingUI({ add: false, search: false })
+  }, [error, formError, success])
   return (
     <form className="form">
       <div className="form-group">
+
+
+
         <RemixInput
           id="firstName"
           name="firstName"
           type="text"
-          value={formInput.name}
+          value={formInput.firstName}
           onChange={handleChange}
-          errors={message?.error?.firstName ? message.error.firstName : null}
+          error={formError?.firstName}
         />
         <RemixInput
           id="maidenName"
@@ -70,6 +64,7 @@ function Form({ searchUser }) {
           type="text"
           value={formInput.maidenName}
           onChange={handleChange}
+
         />
         <RemixInput
           id="lastName"
@@ -77,7 +72,7 @@ function Form({ searchUser }) {
           type="text"
           value={formInput.lastName}
           onChange={handleChange}
-          errors={message?.error?.lastName ? message.error.lastName : null}
+          error={formError?.lastName}
         />
         <RemixInput
           id="username"
@@ -85,7 +80,8 @@ function Form({ searchUser }) {
           type="text"
           value={formInput.username}
           onChange={handleChange}
-          errors={message?.error?.username ? message.error.username : null}
+          error={formError?.username}
+
         />
         <RemixInput
           id="age"
@@ -93,7 +89,11 @@ function Form({ searchUser }) {
           type="text"
           value={formInput.age}
           onChange={handleChange}
-          errors={message?.error?.age ? message.error.age : null}
+          error={formError?.age}
+
+        />
+        <RemixInput id="gender" name="gender" type="dropdown" value={['', 'male', 'female']} onChange={handleChange}
+          error={formError?.gender}
         />
         <RemixInput
           id="email"
@@ -101,7 +101,8 @@ function Form({ searchUser }) {
           type="email"
           value={formInput.email}
           onChange={handleChange}
-          errors={message?.error?.email ? message.error.email : null}
+          error={formError?.email}
+
         />
         <RemixInput
           id="phone"
@@ -109,19 +110,17 @@ function Form({ searchUser }) {
           type="text"
           value={formInput.phone}
           onChange={handleChange}
-          errors={message?.error?.phone ? message.error.phone : null}
+          error={formError?.phone}
+
         />
-        <RemixInput
-          id="birthDate"
-          name="birthDate"
-          type="text"
-          value={formInput.birthDate}
-          onChange={handleChange}
-          errors={message?.error?.birthDate ? message.error.birthDate : null}
-        />
+
       </div>
       <div className="btns">
-        <div></div>
+        <div>
+          {error ? (
+            <em className="text-red-600">{error}</em>
+          ) : null}
+        </div>
         <div>
           <button
             name="search"
@@ -130,7 +129,7 @@ function Form({ searchUser }) {
             type="submit"
             onClick={handleSubmit}
           >
-            Search
+            {pendingUI.search ? "Searching" : "Search"}
           </button>
           <button
             name="add"
@@ -138,18 +137,11 @@ function Form({ searchUser }) {
             value="add"
             type="submit"
             onClick={handleSubmit}
-          >
-            Add
+          >{pendingUI.add ? "Adding" : "Add"}
           </button>
           <div />
         </div>
       </div>
-      {message?.success ? (
-        <h4 className="text-center text-success">{message.success}</h4>
-      ) : null}
-      {message?.error?.form ? (
-        <h4 className="text-center text-red-600">{message.error.form}</h4>
-      ) : null}
     </form>
   );
 }

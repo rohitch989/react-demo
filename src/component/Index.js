@@ -1,6 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
-
-const Home = () => {
+import { NavLink } from "react-router-dom";
+const Home = ({ children }) => {
   return (
     <>
       <nav className="navbar">
@@ -15,15 +14,7 @@ const Home = () => {
         </ul>
       </nav>
       <div className="container">
-        <div>
-          <h1>Welcome to Remix!</h1>
-          <p>
-            Remix is a full stack web framework by the creators of React Router.
-          </p>
-          <Link to="/users" className="btn btn-primary">
-            Go to Record
-          </Link>
-        </div>
+        {children}
       </div>
     </>
   );

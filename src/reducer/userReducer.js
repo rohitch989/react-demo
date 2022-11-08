@@ -1,53 +1,63 @@
 import {
-  DELETE_USERS,
   GET_USER_ERROR,
   SEARCH_USER,
-  ADD_USERS,
+  FETCH_USER, FORM_ERROR, USER_SUCCESS, DELETE_USER, DUMMY_USER, RESET_STATE
 } from "../Action/actionTypes";
-import { users } from "../mockFile";
 export const initialState = {
-  users: users,
+  users: [],
   searched: [],
   error: "",
+  formError: "",
   success: "",
 };
 
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case DELETE_USERS:
-      const removeArr = state.users.filter(
-        (user) => user.id !== action.payload
-      );
+    case FETCH_USER:
       return {
-        users: removeArr,
-        error: "",
+        ...state,
+        users: action.payload,
       };
-
+    case SEARCH_USER:
+      return {
+        ...state,
+        success: 'User Found !',
+        searched: action.payload,
+      };
+    case DELETE_USER:
+      return {
+        ...state,
+        success: 'A User is Deleted !',
+        users: state.users.filter(user => user['_uuid'] !== action.payload)
+      }
     case GET_USER_ERROR:
       return {
         ...state,
-        error: action.payload,
+        error: action.payload
       };
-    case ADD_USERS:
-      const newUser = { ...action.payload, id: state.users.length + 1 };
+    case USER_SUCCESS:
       return {
         ...state,
-        users: [...state.users, newUser],
+        success: action.payload
       };
-    case SEARCH_USER:
-      let searchReault;
-      // const keys = Object.keys(action.payload);
-      // const values = Object.keys(action.payload);
-
-      // for (let i = 0; i < keys.length; i++)
-      let obj = action.payload;
-      searchReault = state.users.filter((u) => u[obj.key] === obj.value);
-
+    case FORM_ERROR:
       return {
         ...state,
-        searched: searchReault,
+        formError: action.payload,
       };
-
+    case RESET_STATE:
+      return {
+        ...state,
+        searched: [],
+        error: "",
+        formError: "",
+        success: "",
+      }
+    case DUMMY_USER:
+      return {
+        ...state,
+        users: state.users.push(action.payload)
+      }
     default:
       return state;
   }
